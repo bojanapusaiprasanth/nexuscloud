@@ -13,7 +13,7 @@
 
     <distributionManagement>
     <repository>
-        <id>bojanapusaiprasanth-github</id>
+        <id>github</id>
         <name>Java Client for Connect with nexus platform</name>
 	<url>https://maven.pkg.github.com/bojanapusaiprasanth/nexuscloud</url>
     </repository>
