@@ -9,6 +9,15 @@
 
     <name>nexus-java-client</name>
     <description>Java Client for Connect with nexus platform</description>
+    
+
+    <distributionManagement>
+    <repository>
+        <id>bojanapusaiprasanth-github</id>
+        <name>Java Client for Connect with nexus platform</name>
+	<url>https://maven.pkg.github.com/bojanapusaiprasanth/nexuscloud</url>
+    </repository>
+    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
