@@ -1,0 +1,63 @@
+name: merge
+
+on:
+  push:
+    branches:
+      - main
+      - alpha
+      - beta
+
+env:
+  BASE_DIR: "."
+  NODE_VERSION: "12.x"
+  JAVA_VERSION: "11"
+  #  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  #NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+    - name: dependency-test
+      run: |
+        mvn dependency:go-offline
+      working-directory: ${{ env.BASE_DIR }}
+    - name: Cache Maven packages
+      uses: actions/cache@v1
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2  
+    - name: unit-test
+      run: |
+        mvn clean test -U
+      working-directory: ${{ env.BASE_DIR }}
+    #- name: Service Tests
+    #  run: |
+    #   ../deploy/scripts/integration_test.sh
+    #  working-directory: ${{ env.BASE_DIR }}
+
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-java@v1
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          server-id: prasanth-github
+      - name: Publish package
+        run: mvn --batch-mode deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_ADMIN_TOKEN }}
+      - name: Cache Maven packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
